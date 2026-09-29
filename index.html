@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>漢字作り遊び</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div class="wrap">
+<section id="home" class="card">
+  <h1>漢字作り遊び</h1>
+  <div class="sub">まだ存在しない概念を、漢字一字に圧縮してみる遊びです。</div>
+  <div class="mode-grid">
+    <button class="mode" id="soloModeBtn"><strong>ひとりで作る</strong><span class="muted">お題 → 作字 → PNG保存</span></button>
+    <button class="mode" id="battleModeBtn"><strong>対戦モード</strong><span class="muted">1台のスマホを順番に回して遊ぶ</span></button>
+  </div>
+</section>
+<section id="setup" class="card hidden">
+  <h2>対戦設定</h2>
+  <div class="field"><label>参加人数</label><div class="stepper"><button id="playersMinus">−</button><div class="value" id="playerCountValue">4</div><button id="playersPlus">＋</button></div><div class="tiny">2〜8人</div></div>
+  <div class="field"><label>周回数</label><div class="stepper"><button id="roundsMinus">−</button><div class="value" id="roundCountValue">2</div><button id="roundsPlus">＋</button></div><div class="tiny">デフォルト2周。1〜5周</div></div>
+  <div class="field"><label>プレイヤー名（任意）</label><div id="playerNames" class="names"></div></div>
+  <div class="btn-row"><button id="startBattleBtn" class="primary">ゲーム開始</button><button class="backHomeBtn">戻る</button></div>
+</section>
+<section id="handoff" class="card hidden">
+  <div class="status"><span class="pill" id="handoffProgress"></span><span class="pill" id="handoffRound"></span></div>
+  <div class="handoff"><div class="muted">スマホを渡してください</div><div class="big" id="handoffName"></div><div class="muted">他の人に画面を見せず、本人だけがボタンを押してください。</div><div class="btn-row" style="justify-content:center"><button id="revealTopicBtn" class="primary">お題を見る</button></div></div>
+  <button id="quitBattleBtn1" class="danger-link">ゲームを終了</button>
+</section>
+<section id="battleDraw" class="card hidden">
+  <div class="status"><span class="pill" id="battleProgress"></span><span class="pill" id="battleRound"></span></div>
+  <div class="turn-player" id="battlePlayer"></div>
+  <div class="muted">このお題を、創作漢字一字で表してください。</div>
+  <div style="margin-top:12px"><div id="battleTopic" class="topic"></div></div>
+  <div class="canvas-wrap"><canvas id="battleCanvas" width="1200" height="1200"></canvas></div>
+  <div class="toolbar"><div class="range-wrap"><label><strong>線</strong></label><input id="battleBrush" type="range" min="4" max="32" value="20"><span id="battleBrushValue">20</span></div><button id="battleUndo">1本戻す</button><button id="battleClear">全部消す</button><button id="finishGlyphBtn" class="primary">完成</button></div>
+</section>
+<section id="guess" class="card hidden">
+  <div class="status"><span class="pill" id="guessProgress"></span><span class="pill" id="guessRound"></span></div>
+  <h2>みんなで当てる</h2><div class="muted">画面をみんなに見せて、何を表す漢字か答えてもらってください。</div>
+  <div class="canvas-wrap"><canvas id="guessCanvas" width="1200" height="1200"></canvas></div><div class="btn-row"><button id="showAnswerBtn" class="primary">答えを見る</button></div>
+</section>
+<section id="scoreTurn" class="card hidden">
+  <div class="status"><span class="pill" id="scoreProgress"></span><span class="pill" id="scoreRound"></span></div>
+  <h2>正解者を選ぶ</h2><div id="answerBox" class="answer-box"></div>
+  <div class="muted" style="margin-top:12px">正解した人をすべて選んでください。正解者は+1点、正解者1人につき作字者も+1点です。</div>
+  <div id="correctPlayers" class="correct-grid"></div><div class="btn-row"><button id="applyScoreBtn" class="primary">採点して次へ</button></div>
+</section>
+<section id="battleResults" class="card hidden">
+  <h2>結果</h2><div id="winnerText" class="turn-player"></div><div id="resultTable"></div>
+  <div class="btn-row"><button id="playAgainBtn" class="primary">同じメンバーでもう一度</button><button class="backHomeBtn">トップへ</button></div>
+</section>
+<section id="solo" class="card hidden">
+  <div class="status"><h2 style="margin:0">ひとりで作る</h2><button class="backHomeBtn">トップへ</button></div>
+  <div class="solo-topic-box"><div id="soloTopic" class="solo-topic">お題を引くか、自分で決めてください</div></div>
+  <div class="btn-row"><button id="soloNewTopic" class="primary">ランダムお題</button><button id="soloToggleTopic">お題を隠す</button></div>
+  <div class="custom-topic-row"><input id="soloCustomTopic" type="text" maxlength="40" placeholder="任意のお題を入力（例：モバイルバッテリー）"><button id="soloSetCustomTopic">このお題で作る</button></div>
+  <div class="canvas-wrap"><canvas id="soloCanvas" width="1200" height="1200"></canvas></div>
+  <div class="toolbar"><div class="range-wrap"><label><strong>線</strong></label><input id="soloBrush" type="range" min="4" max="32" value="20"><span id="soloBrushValue">20</span></div><button id="soloUndo">1本戻す</button><button id="soloClear">全部消す</button><button id="soloSave">PNG保存</button><button id="soloShare">共有</button></div>
+</section>
+<section class="card footer-note"><strong>基本ルール</strong><br>既存漢字・部首・漢字の構成要素や筆画を使って一字を作る想定です。かな・カタカナ・アルファベット・数字・矢印などの記号は字の中では使わないルールを推奨します。</section>
+</div>
+<script src="topics.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
